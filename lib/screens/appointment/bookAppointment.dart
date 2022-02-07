@@ -161,6 +161,10 @@ class _BookAppointmentState extends State<BookAppointment> {
                     onChanged: (value) {
                       setState(() {
                         selectedDistrict = value;
+                        appointmentCard.clear();
+                        appointmentCard.add(Center(child: CircularProgressIndicator()));
+                        apiCall(selectedDistrict,
+                            DateFormat("dd-MM-yyyy").format(_dateTime));
                       });
                     },
                   ),
@@ -203,6 +207,10 @@ class _BookAppointmentState extends State<BookAppointment> {
                   ).then((date) {
                     setState(() {
                       _dateTime = date;
+                      appointmentCard.clear();
+                      appointmentCard.add(Center(child: CircularProgressIndicator()));
+                      apiCall(selectedDistrict,
+                          DateFormat("dd-MM-yyyy").format(_dateTime));
                     });
                   });
                 },
@@ -230,17 +238,6 @@ class _BookAppointmentState extends State<BookAppointment> {
               ),
               SizedBox(
                 height: 20,
-              ),
-              DefaultButton(
-                text: "Search",
-                press: () {
-                  appointmentCard.clear();
-                  appointmentCard.add(Center(child: CircularProgressIndicator()));
-                  apiCall(selectedDistrict,
-                      DateFormat("dd-MM-yyyy").format(_dateTime));
-                  setState(() {
-                  });
-                },
               ),
               SizedBox(
                 height: 20,
