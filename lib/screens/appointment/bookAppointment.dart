@@ -15,6 +15,31 @@ class BookAppointment extends StatefulWidget {
 class _BookAppointmentState extends State<BookAppointment> {
   List<Widget> appointmentCard = [];
 
+  void listOfWidgets(var vaccinationData) {
+    appointmentCard.clear();
+    print(vaccinationData);
+    for (int i = 0; i < vaccinationData.length; i++) {
+      appointmentCard.add(
+        BookingDetails(
+          id: vaccinationData[i]['id'],
+          appointmentCount: vaccinationData[i]['todayAppointments'],
+          maxLimit: vaccinationData[i]['maxDailyLimit'].toString(),
+          dose: vaccinationData[i]['vaccine'],
+          batchNumber: vaccinationData[i]['batchNumber'],
+          vCenter: vaccinationData[i]['name'],
+          isActive: vaccinationData[i]['vaccinatedAt'],
+        ),
+      );
+    }
+    appointmentCard.add(
+      DefaultButton(
+        text: "Confirm Booking",
+        press: () {},
+      ),
+    );
+    print(appointmentCard);
+  }
+
   Future apiCall(String district, String date) async {
     http.Response response;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -28,7 +53,19 @@ class _BookAppointmentState extends State<BookAppointment> {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     });
-    print(response.body);
+
+    if (response.body != null) {
+      var vaccinationData = [];
+      vaccinationData = json.decode(response.body);
+      if (vaccinationData.length > 0) {
+        listOfWidgets(vaccinationData);
+      }else{
+        appointmentCard.clear();
+        appointmentCard.add(Text("No Center found!"));
+      }
+    }
+
+    return response.body;
   }
 
   void initState() {
@@ -67,29 +104,7 @@ class _BookAppointmentState extends State<BookAppointment> {
   ];
   String selectedDistrict = "Colombo";
 
-  void listOfWidgets(var vaccinationData) {
-    appointmentCard.clear();
-    print(vaccinationData);
-    for (int i = 0; i < vaccinationData.length; i++) {
-      appointmentCard.add(
-        BookingDetails(
-          id: vaccinationData[i]['id'],
-          appointmentCount: vaccinationData[i]['todayAppointments'],
-          maxLimit: vaccinationData[i]['maxDailyLimit'],
-          dose: vaccinationData[i]['vaccine'],
-          batchNumber: vaccinationData[i]['batchNumber'],
-          vCenter: vaccinationData[i]['name'],
-          isActive: vaccinationData[i]['vaccinatedAt'],
-        ),
-      );
-    }
-    appointmentCard.add(
-      DefaultButton(
-        text: "Confirm Booking",
-        press: () {},
-      ),
-    );
-  }
+
 
   DropdownMenuItem buildMenuItem(String item) => DropdownMenuItem(
         value: item,
@@ -219,8 +234,12 @@ class _BookAppointmentState extends State<BookAppointment> {
               DefaultButton(
                 text: "Search",
                 press: () {
+                  appointmentCard.clear();
+                  appointmentCard.add(Center(child: CircularProgressIndicator()));
                   apiCall(selectedDistrict,
                       DateFormat("dd-MM-yyyy").format(_dateTime));
+                  setState(() {
+                  });
                 },
               ),
               SizedBox(
@@ -233,18 +252,14 @@ class _BookAppointmentState extends State<BookAppointment> {
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.data != null) {
-                      var vaccinationData = [];
-                      vaccinationData = json.decode(snapshot.data);
-                      if (vaccinationData.length > 0) {
-                        listOfWidgets(vaccinationData);
-                      }
-                      print(vaccinationData.length);
-                    }
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: appointmentCard,
-                    );
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: appointmentCard,
+                      );
+                    }
+                    return Center(child: CircularProgressIndicator());
+
                   }),
               // BookingDetails(),
               SizedBox(
