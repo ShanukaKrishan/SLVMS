@@ -8,6 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class BookAppointment extends StatefulWidget {
   static String routeName = '/bookAppointment';
+  var date;
+  var vCenter;
+
+  BookAppointment({this.vCenter});
   @override
   _BookAppointmentState createState() => _BookAppointmentState();
 }
@@ -22,19 +26,21 @@ class _BookAppointmentState extends State<BookAppointment> {
       appointmentCard.add(
         BookingDetails(
           id: vaccinationData[i]['id'],
-          appointmentCount: vaccinationData[i]['todayAppointments'],
-          maxLimit: vaccinationData[i]['maxDailyLimit'].toString(),
+          // appointmentCount: vaccinationData[i]['todayAppointments'],
+          appointmentCount: 20,
+          maxLimit: vaccinationData[i]['maxDailyLimit'],
           dose: vaccinationData[i]['vaccine'],
           batchNumber: vaccinationData[i]['batchNumber'],
           vCenter: vaccinationData[i]['name'],
-          isActive: vaccinationData[i]['vaccinatedAt'],
+          isActive: true,
+          //isActive: vaccinationData[i]['vaccinatedAt'],
         ),
       );
     }
     appointmentCard.add(
       DefaultButton(
         text: "Confirm Booking",
-        press: () {},
+        press: sendAppointment,
       ),
     );
     print(appointmentCard);
@@ -59,13 +65,49 @@ class _BookAppointmentState extends State<BookAppointment> {
       vaccinationData = json.decode(response.body);
       if (vaccinationData.length > 0) {
         listOfWidgets(vaccinationData);
-      }else{
+      } else {
         appointmentCard.clear();
         appointmentCard.add(Text("No Center found!"));
       }
     }
 
     return response.body;
+  }
+
+  sendAppointment() async {
+    var url = Uri.parse("https://vms-sl.azurewebsites.net/appointment");
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String token = (prefs.getString('token') ?? '');
+    Map data = {
+      "vCenterId": 4,
+      "date": DateFormat("dd-MM-yyyy").format(_dateTime),
+    };
+    var body = json.encode(data);
+    print(url);
+    var jsonResponse;
+    try {
+      var res = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: body);
+      print(res.statusCode);
+      if (res.statusCode == 400) {
+        print(json.decode(res.body));
+      }
+      if (res.statusCode == 200) {
+        jsonResponse = json.decode(res.body);
+        print("Response Status: ${res.statusCode}");
+
+        if (jsonResponse != null) {}
+      }
+    } catch (error) {
+      print(error);
+    }
   }
 
   void initState() {
@@ -103,8 +145,6 @@ class _BookAppointmentState extends State<BookAppointment> {
     "Kegalle",
   ];
   String selectedDistrict = "Colombo";
-
-
 
   DropdownMenuItem buildMenuItem(String item) => DropdownMenuItem(
         value: item,
@@ -162,7 +202,8 @@ class _BookAppointmentState extends State<BookAppointment> {
                       setState(() {
                         selectedDistrict = value;
                         appointmentCard.clear();
-                        appointmentCard.add(Center(child: CircularProgressIndicator()));
+                        appointmentCard
+                            .add(Center(child: CircularProgressIndicator()));
                         apiCall(selectedDistrict,
                             DateFormat("dd-MM-yyyy").format(_dateTime));
                       });
@@ -208,7 +249,8 @@ class _BookAppointmentState extends State<BookAppointment> {
                     setState(() {
                       _dateTime = date;
                       appointmentCard.clear();
-                      appointmentCard.add(Center(child: CircularProgressIndicator()));
+                      appointmentCard
+                          .add(Center(child: CircularProgressIndicator()));
                       apiCall(selectedDistrict,
                           DateFormat("dd-MM-yyyy").format(_dateTime));
                     });
@@ -249,14 +291,12 @@ class _BookAppointmentState extends State<BookAppointment> {
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.data != null) {
-
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: appointmentCard,
                       );
                     }
                     return Center(child: CircularProgressIndicator());
-
                   }),
               // BookingDetails(),
               SizedBox(

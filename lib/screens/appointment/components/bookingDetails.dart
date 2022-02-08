@@ -1,11 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/screens/appointment/bookAppointment.dart';
 
 class BookingDetails extends StatefulWidget {
   final int id;
   final String dose;
   final String batchNumber;
   final String vCenter;
-  final String maxLimit;
+  final int maxLimit;
   final bool isActive;
   final int appointmentCount;
 
@@ -26,7 +28,46 @@ class BookingDetails extends StatefulWidget {
 class _BookingDetailsState extends State<BookingDetails> {
   bool value = false;
   @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Color _checkColor() {
+      if (widget.isActive == false &&
+          widget.appointmentCount < widget.maxLimit &&
+          value == false) {
+        return Colors.red;
+      } else if (widget.appointmentCount >= widget.maxLimit &&
+          value == false &&
+          widget.isActive == true) {
+        return Colors.amber;
+      } else if (value == false) {
+        return Colors.green;
+      } else if (value == true) {
+        return Color.fromRGBO(59, 240, 132, 1);
+      } else {
+        return Colors.pink;
+      }
+    }
+
+    Text _checkText() {
+      if (widget.isActive == false) {
+        return Text("LOCATION INACTIVE", style: TextStyle(color: Colors.white));
+      }
+      if (widget.appointmentCount >= widget.maxLimit) {
+        return Text("LOCATION FULL", style: TextStyle(color: Colors.white));
+      }
+      if (value == true) {
+        return Text("Selected");
+      } else
+        return Text("Select");
+    }
+
+    int spotCount = widget.maxLimit - widget.appointmentCount;
     return Container(
       margin: EdgeInsets.only(bottom: 10),
       child: Stack(
@@ -39,14 +80,14 @@ class _BookingDetailsState extends State<BookingDetails> {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 width: 3,
-                color: Color.fromRGBO(59, 240, 132, 1),
+                color: _checkColor(),
               ),
             ),
             child: Padding(
-              padding: EdgeInsets.only(left: 10, top: 10),
+              padding: EdgeInsets.only(left: 10, top: 10, right: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
@@ -60,7 +101,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                         width: 10,
                       ),
                       Text(
-                        "Pfizer",
+                        widget.dose,
                         style: TextStyle(
                           fontSize: 18,
                         ),
@@ -68,13 +109,6 @@ class _BookingDetailsState extends State<BookingDetails> {
                       SizedBox(
                         width: 220,
                       ),
-                      Checkbox(
-                          value: value,
-                          onChanged: (value) {
-                            setState(() {
-                              this.value = value;
-                            });
-                          }),
                     ],
                   ),
                   Row(
@@ -89,7 +123,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                         width: 10,
                       ),
                       Text(
-                        "Batch 00001",
+                        widget.batchNumber,
                         style: TextStyle(
                           fontSize: 18,
                         ),
@@ -108,7 +142,10 @@ class _BookingDetailsState extends State<BookingDetails> {
                         width: 10,
                       ),
                       Text(
-                        "DD/MM/YYYY",
+                        spotCount.toString() +
+                            "/" +
+                            widget.maxLimit.toString() +
+                            " spots left",
                         style: TextStyle(
                           fontSize: 18,
                         ),
@@ -126,34 +163,43 @@ class _BookingDetailsState extends State<BookingDetails> {
                       SizedBox(
                         width: 10,
                       ),
-                      Text(
-                        widget.vCenter,
-                        style: TextStyle(
-                          fontSize: 18,
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Text(
+                            widget.vCenter,
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  FlatButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Text(
-                      value == false ? "Select Location" : "Location Selected",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w700,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: RaisedButton(
+                          textColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          disabledTextColor: Colors.grey,
+                          disabledColor: _checkColor(),
+                          color: _checkColor(),
+                          onPressed: () {
+                            BookAppointment(vCenter: widget.vCenter);
+                            print(value);
+                            setState(() {
+                              value = !value;
+                            });
+                          },
+                          child: _checkText(),
+                        ),
                       ),
-                    ),
-                    minWidth: 360,
-                    color: value == false
-                        ? Color.fromRGBO(59, 240, 132, 1)
-                        : Color.fromRGBO(0, 195, 78, 1),
-                    onPressed: () {
-                      setState(() {
-                        value = !value;
-                      });
-                    },
+                    ],
                   ),
+                  // button(),
                 ],
               ),
             ),
