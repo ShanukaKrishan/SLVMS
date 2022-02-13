@@ -1,4 +1,4 @@
-import 'vaccinationDetails.dart';
+import 'VaccinationDetails.dart';
 
 class User {
   String id;

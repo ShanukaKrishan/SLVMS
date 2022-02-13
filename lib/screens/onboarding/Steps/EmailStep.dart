@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fyp/screens/onboarding/components/welcome_text.dart';
+import 'package:fyp/screens/onboarding/components/WelcomeText.dart';
 
 class EmailStep extends StatelessWidget {
   const EmailStep({

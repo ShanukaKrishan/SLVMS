@@ -1,10 +1,17 @@
+import 'dart:async';
+
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:fyp/screens/login/login.dart';
-import 'Steps/IdentityStep.dart';
-import 'Steps/PersonalDetailStep.dart';
-import 'Steps/RegisterationStep.dart';
+import 'package:fyp/screens/login/Login.dart';
+import 'components/CardDetails.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'components/WelcomeText.dart';
+
 import 'Steps/EmailStep.dart';
 import 'components/CustomAppBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnBoardingForm extends StatefulWidget {
   @override
@@ -12,25 +19,280 @@ class OnBoardingForm extends StatefulWidget {
 }
 
 class _OnBoardingFormState extends State<OnBoardingForm> {
+  Map userDetails;
+  String nic;
+  TextEditingController _username = TextEditingController();
+  TextEditingController _email = TextEditingController();
+  TextEditingController _phone = TextEditingController();
+  TextEditingController _password = TextEditingController();
+  TextEditingController _confirmPassword = TextEditingController();
+  TextEditingController _gender = TextEditingController();
   int currentStep = 0;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nicController = TextEditingController();
+  var res;
+  Future getUserDetails() async {
+    http.Response response;
+    nic = _nicController.text;
+
+    String url = "https://sl-citizens.azurewebsites.net/Citizen/$nic";
+
+    response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+
+    if (response.body != null) {
+      userDetails = json.decode(response.body);
+    }
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print(userDetails);
+    }
+    return true;
+  }
+
+  registerUser() async {
+    print("reoccuring");
+    var url = Uri.parse("https://vms-sl.azurewebsites.net/auth/register");
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    Map data = {
+      "nic": nic,
+      "firstName": userDetails['firstName'],
+      "lastName": userDetails['lastName'],
+      "username": _username.text,
+      "email": _email.text,
+      "phoneNumber": _phone.text.toString(),
+      "password": _password.text,
+      "gender": userDetails['gender'],
+      "dob": userDetails["dateOfBirth"],
+    };
+    print(data);
+    var body = json.encode(data);
+
+    try {
+      res = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: body);
+      print(res.statusCode);
+
+      if (res.statusCode == 400) {}
+      if (res.statusCode == 200) {
+        var jsonResponse = json.decode(res.body);
+        CoolAlert.show(context: context, type: CoolAlertType.success);
+        print("Response Status: ${res.statusCode}");
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
+
   List<Step> getSteps() => [
         Step(
           state: currentStep > 0 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 0,
           title: Text(""),
-          content: IdentityStep(),
+          content: Column(
+            children: <Widget>[
+              WelcomeText(),
+              SizedBox(
+                height: 30,
+              ),
+              TextField(
+                controller: _nicController,
+                decoration: InputDecoration(
+                  hintText: "Enter your NIC",
+                  labelText: "National Identity",
+                ),
+              ),
+              SizedBox(
+                height: 150,
+              ),
+            ],
+          ),
         ),
         Step(
           state: currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 1,
           title: Text(""),
-          content: PersonalDetailsStep(),
+          content: FutureBuilder(
+              future: getUserDetails(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return userDetails == null
+                      ? CircularProgressIndicator()
+                      : Column(
+                          children: <Widget>[
+                            WelcomeText(),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Your personal details",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 40,
+                            ),
+                            Card(
+                              elevation: 5,
+                              color: Colors.grey.shade50,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    UserCardDetails(
+                                      category: "NIC",
+                                      detail: userDetails['nic'],
+                                    ),
+                                    UserCardDetails(
+                                      category: "Full Name",
+                                      detail: userDetails['firstName'],
+                                    ),
+                                    UserCardDetails(
+                                      category: "Last Name",
+                                      detail: userDetails['lastName'],
+                                    ),
+                                    UserCardDetails(
+                                      category: "Date of Birth",
+                                      detail: userDetails['dateOfBirth'],
+                                    ),
+                                    UserCardDetails(
+                                      category: "Street",
+                                      detail: userDetails['street'],
+                                    ),
+                                    UserCardDetails(
+                                      category: "City",
+                                      detail: userDetails['city'],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 23,
+                            ),
+                          ],
+                        );
+                }
+                return Center(child: CircularProgressIndicator());
+              }),
         ),
         Step(
           state: currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 2,
           title: Text(""),
-          content: RegistrationStep(),
+          content: Column(
+            children: <Widget>[
+              WelcomeText(),
+              SizedBox(
+                height: 15,
+              ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Username",
+                        labelText: "username",
+                        suffixIcon: Icon(Icons.person_rounded),
+                      ),
+                      controller: _username,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return "Username can't be empty";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Enter your email",
+                        labelText: "Email",
+                        suffixIcon: Icon(Icons.mail),
+                      ),
+                      controller: _email,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return "Email can't be empty";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Enter your password",
+                        labelText: "Password",
+                        suffixIcon: Icon(Icons.lock),
+                      ),
+                      controller: _password,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return "Password can't be empty";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Confirm password",
+                        labelText: "Confirm password",
+                        suffixIcon: Icon(Icons.lock),
+                      ),
+                      controller: _confirmPassword,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return "Confirm password can't be empty";
+                        }
+                        if (_password.text != _confirmPassword.text) {
+                          return "Confirm password doesn't match ";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Enter your phone number",
+                        labelText: "Phone number",
+                        suffixIcon: Icon(Icons.phone),
+                      ),
+                      controller: _phone,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return "Phone number can't be empty";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 23,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         Step(
           state: currentStep > 3 ? StepState.complete : StepState.indexed,
@@ -45,9 +307,7 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(150),
-        child: SafeArea(
-          child: CustomAppBar(),
-        ),
+        child: CustomAppBar(),
       ),
       body: Theme(
         data: Theme.of(context).copyWith(
@@ -62,16 +322,6 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
           type: StepperType.horizontal,
           steps: getSteps(),
           currentStep: currentStep,
-          onStepContinue: () {
-            final isLastStep = currentStep == getSteps().length - 1;
-            if (isLastStep) {
-              Navigator.pushNamed(context, LoginScreen.routeName);
-            } else {
-              setState(() {
-                currentStep += 1;
-              });
-            }
-          },
           controlsBuilder: (BuildContext context, ControlsDetails controls) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -90,7 +340,19 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.black),
                       ),
-                      onPressed: controls.onStepContinue,
+                      onPressed: () async {
+                        if (_nicController.text.isEmpty) {
+                          print("cant be empty");
+                        }
+                        if (_nicController.text.isNotEmpty) {
+                          // getUserDetails();
+                          print(_nicController.text);
+                          print("not empty");
+                          setState(() {
+                            currentStep += 1;
+                          });
+                        }
+                      },
                       child: const Text(
                         'Check Identity',
                         style: TextStyle(
@@ -113,7 +375,11 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.black),
                       ),
-                      onPressed: controls.onStepContinue,
+                      onPressed: () {
+                        setState(() {
+                          currentStep += 1;
+                        });
+                      },
                       child: const Text(
                         'Confirm',
                         style: TextStyle(
@@ -136,13 +402,30 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.black),
                       ),
-                      onPressed: controls.onStepContinue,
                       child: const Text(
                         'Create Account',
                         style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          print("sucessfull");
+                          registerUser();
+                          setState(() {
+                            currentStep += 1;
+                          });
+                          if (res.statusCode == 400) {
+                            CoolAlert.show(
+                                context: context, type: CoolAlertType.error);
+                          }
+                          if (res.statusCode == 403) {
+                            print(json.decode(res.body));
+                          }
+                        } else {
+                          print("unsucessfull");
+                        }
+                      },
                     ),
                   ),
                 if (currentStep == 3)
@@ -159,7 +442,12 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.black),
                       ),
-                      onPressed: controls.onStepContinue,
+                      onPressed: () {
+                        final isLastStep = currentStep == getSteps().length - 1;
+                        if (isLastStep) {
+                          Navigator.pushNamed(context, LoginScreen.routeName);
+                        }
+                      },
                       child: const Text(
                         'Continue',
                         style: TextStyle(

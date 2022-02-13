@@ -1,13 +1,18 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:fyp/components/default_button.dart';
+import 'package:fyp/components/DefaultButton.dart';
+import 'package:fyp/screens/appointment/YourAppointments.dart';
 import 'package:intl/intl.dart';
-import 'components/bookingDetails.dart';
+import 'components/BookingDetails.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BookAppointment extends StatefulWidget {
   static String routeName = '/bookAppointment';
+  var date;
+
   @override
   _BookAppointmentState createState() => _BookAppointmentState();
 }
@@ -17,13 +22,14 @@ class _BookAppointmentState extends State<BookAppointment> {
 
   void listOfWidgets(var vaccinationData) {
     appointmentCard.clear();
+
     print(vaccinationData);
     for (int i = 0; i < vaccinationData.length; i++) {
       appointmentCard.add(
         BookingDetails(
           id: vaccinationData[i]['id'],
           appointmentCount: vaccinationData[i]['todayAppointments'],
-          maxLimit: vaccinationData[i]['maxDailyLimit'].toString(),
+          maxLimit: vaccinationData[i]['maxDailyLimit'],
           dose: vaccinationData[i]['vaccine'],
           batchNumber: vaccinationData[i]['batchNumber'],
           vCenter: vaccinationData[i]['name'],
@@ -34,7 +40,7 @@ class _BookAppointmentState extends State<BookAppointment> {
     appointmentCard.add(
       DefaultButton(
         text: "Confirm Booking",
-        press: () {},
+        press: sendAppointment,
       ),
     );
     print(appointmentCard);
@@ -45,8 +51,9 @@ class _BookAppointmentState extends State<BookAppointment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
+    print(_dateTime);
     String url =
-        "https://vms-sl.azurewebsites.net/v-center/city/$district?date=$date";
+        "http://vms-sl.azurewebsites.net/v-center/filter/$district?date=$date";
 
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -59,13 +66,56 @@ class _BookAppointmentState extends State<BookAppointment> {
       vaccinationData = json.decode(response.body);
       if (vaccinationData.length > 0) {
         listOfWidgets(vaccinationData);
-      }else{
+      } else {
         appointmentCard.clear();
         appointmentCard.add(Text("No Center found!"));
       }
     }
 
     return response.body;
+  }
+
+  sendAppointment() async {
+    var url = Uri.parse("https://vms-sl.azurewebsites.net/appointment");
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String token = (prefs.getString('token') ?? '');
+    int vCenter = (prefs.getInt('vCenterId') ?? '');
+
+    Map data = {
+      "vCenterId": vCenter,
+      "date": DateFormat("dd-MM-yyyy").format(_dateTime),
+    };
+    var body = json.encode(data);
+    print(url);
+    var jsonResponse;
+    try {
+      var res = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: body);
+      print(res.statusCode);
+      if (res.statusCode == 403) {
+        print(vCenter);
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.error,
+            text: "You already have an appointment");
+        print(json.decode(res.body));
+      }
+      if (res.statusCode == 200) {
+        jsonResponse = json.decode(res.body);
+        CoolAlert.show(context: context, type: CoolAlertType.success);
+        Navigator.pushNamed(context, Appointment.routeName);
+        print("Response Status: ${res.statusCode}");
+      }
+    } catch (error) {
+      print(error);
+    }
   }
 
   void initState() {
@@ -103,8 +153,6 @@ class _BookAppointmentState extends State<BookAppointment> {
     "Kegalle",
   ];
   String selectedDistrict = "Colombo";
-
-
 
   DropdownMenuItem buildMenuItem(String item) => DropdownMenuItem(
         value: item,
@@ -162,7 +210,8 @@ class _BookAppointmentState extends State<BookAppointment> {
                       setState(() {
                         selectedDistrict = value;
                         appointmentCard.clear();
-                        appointmentCard.add(Center(child: CircularProgressIndicator()));
+                        appointmentCard
+                            .add(Center(child: CircularProgressIndicator()));
                         apiCall(selectedDistrict,
                             DateFormat("dd-MM-yyyy").format(_dateTime));
                       });
@@ -208,7 +257,8 @@ class _BookAppointmentState extends State<BookAppointment> {
                     setState(() {
                       _dateTime = date;
                       appointmentCard.clear();
-                      appointmentCard.add(Center(child: CircularProgressIndicator()));
+                      appointmentCard
+                          .add(Center(child: CircularProgressIndicator()));
                       apiCall(selectedDistrict,
                           DateFormat("dd-MM-yyyy").format(_dateTime));
                     });
@@ -249,14 +299,12 @@ class _BookAppointmentState extends State<BookAppointment> {
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.data != null) {
-
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: appointmentCard,
                       );
                     }
                     return Center(child: CircularProgressIndicator());
-
                   }),
               // BookingDetails(),
               SizedBox(
