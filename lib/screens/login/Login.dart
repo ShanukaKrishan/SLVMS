@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'sign_form.dart';
+import 'SignForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,19 +29,40 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 Text(
-                  "Health Promotion Bureau",
+                  "සෞඛ්‍ය ප්‍රවර්ධන කාර්යාංශය",
                   style: TextStyle(
                     fontSize: 18,
                   ),
                 ),
+                SizedBox(
+                  height: 3,
+                ),
                 Text(
-                  "Vaccine Management System",
+                  "சுகாதார மேம்பாட்டுப் பணியகம்",
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                   ),
                 ),
                 SizedBox(
-                  height: 70,
+                  height: 3,
+                ),
+                Text(
+                  "Health Promotion Bureau",
+                  style: TextStyle(
+                    fontSize: 19,
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                // Text(
+                //   "Vaccine Management System",
+                //   style: TextStyle(
+                //     fontSize: 20,
+                //   ),
+                // ),
+                SizedBox(
+                  height: 30,
                 ),
                 SignForm(),
               ],

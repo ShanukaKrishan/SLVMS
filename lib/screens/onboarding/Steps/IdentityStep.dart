@@ -1,30 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:fyp/screens/onboarding//components/welcome_text.dart';
-
-class IdentityStep extends StatelessWidget {
-  const IdentityStep({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        WelcomeText(),
-        SizedBox(
-          height: 30,
-        ),
-        TextField(
-          onSubmitted: null,
-          decoration: InputDecoration(
-            hintText: "Enter your NIC",
-            labelText: "National Identity",
-          ),
-        ),
-        SizedBox(
-          height: 150,
-        ),
-      ],
-    );
-  }
-}
+// import 'package:cool_alert/cool_alert.dart';
+// import 'package:flutter/material.dart';
+// import 'package:fyp/screens/onboarding//components/WelcomeText.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:convert';
+//
+// class IdentityStep extends StatelessWidget {
+//   String error;
+//   @override
+//   Widget build(BuildContext context) {
+//     return null;
+//   }
+// }

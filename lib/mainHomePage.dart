@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/components/MainAppBar.dart';
-import 'package:fyp/screens/home/home.dart';
-import 'package:fyp/screens/appointment/appointment.dart';
-import 'package:fyp/screens/information/infromation.dart';
-import 'package:fyp/screens/profile/profile.dart';
-import 'package:fyp/screens/services/services.dart';
+import 'package:fyp/screens/home/Home.dart';
+import 'package:fyp/screens/appointment/YourAppointments.dart';
+import 'package:fyp/screens/information/Infromation.dart';
+import 'package:fyp/screens/profile/Profile.dart';
+import 'package:fyp/screens/services/Services.dart';
 
 class HomePage extends StatefulWidget {
   @override

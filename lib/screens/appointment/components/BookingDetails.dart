@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fyp/screens/appointment/bookAppointment.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookingDetails extends StatefulWidget {
   final int id;
@@ -27,6 +26,7 @@ class BookingDetails extends StatefulWidget {
 
 class _BookingDetailsState extends State<BookingDetails> {
   bool value = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -106,9 +106,6 @@ class _BookingDetailsState extends State<BookingDetails> {
                           fontSize: 18,
                         ),
                       ),
-                      SizedBox(
-                        width: 220,
-                      ),
                     ],
                   ),
                   Row(
@@ -187,12 +184,15 @@ class _BookingDetailsState extends State<BookingDetails> {
                           disabledTextColor: Colors.grey,
                           disabledColor: _checkColor(),
                           color: _checkColor(),
-                          onPressed: () {
-                            BookAppointment(vCenter: widget.vCenter);
-                            print(value);
+                          onPressed: () async {
                             setState(() {
                               value = !value;
                             });
+                            if (value) {
+                              SharedPreferences sharedPreferences =
+                                  await SharedPreferences.getInstance();
+                              sharedPreferences.setInt('vCenterId', widget.id);
+                            }
                           },
                           child: _checkText(),
                         ),

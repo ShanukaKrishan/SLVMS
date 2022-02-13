@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fyp/screens/appointment/bookAppointment.dart';
-import 'package:fyp/screens/information/infromation.dart';
-import 'package:fyp/screens/login/login.dart';
-import 'package:fyp/screens/profile/profile.dart';
-import 'package:fyp/screens/services/services.dart';
-import 'screens/home/home.dart';
-import 'screens/appointment/appointment.dart';
+import 'package:fyp/screens/appointment/BookAppointment.dart';
+import 'package:fyp/screens/information/Infromation.dart';
+import 'package:fyp/screens/login/Login.dart';
+import 'package:fyp/screens/profile/Profile.dart';
+import 'package:fyp/screens/services/Services.dart';
+import 'screens/home/Home.dart';
+import 'screens/appointment/YourAppointments.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LoginScreen.routeName: (context) => LoginScreen(),

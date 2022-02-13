@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:fyp/components/default_button.dart';
+import 'package:fyp/components/DefaultButton.dart';
 import 'package:fyp/mainHomePage.dart';
-import 'package:fyp/screens/home/home.dart';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -36,6 +36,9 @@ class _SignFormState extends State<SignForm> {
       if (res.statusCode == 200) {
         jsonResponse = json.decode(res.body);
         print("Response Status: ${res.statusCode}");
+        if (res.statusCode == 403) {
+          print(json.decode(res.body));
+        }
 
         if (jsonResponse != null) {
           setState(() {
@@ -53,6 +56,9 @@ class _SignFormState extends State<SignForm> {
             _isLoading = false;
           });
         }
+      }
+      if (res.statusCode == 503) {
+        print("Server under maintenance, Please check after a while ");
       } else if (res.statusCode == 401) {
         print(json.decode(res.body));
       }

@@ -1,17 +1,18 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
-import 'package:fyp/components/default_button.dart';
+import 'package:fyp/components/DefaultButton.dart';
+import 'package:fyp/screens/appointment/YourAppointments.dart';
 import 'package:intl/intl.dart';
-import 'components/bookingDetails.dart';
+import 'components/BookingDetails.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BookAppointment extends StatefulWidget {
   static String routeName = '/bookAppointment';
   var date;
-  var vCenter;
 
-  BookAppointment({this.vCenter});
   @override
   _BookAppointmentState createState() => _BookAppointmentState();
 }
@@ -21,19 +22,18 @@ class _BookAppointmentState extends State<BookAppointment> {
 
   void listOfWidgets(var vaccinationData) {
     appointmentCard.clear();
+
     print(vaccinationData);
     for (int i = 0; i < vaccinationData.length; i++) {
       appointmentCard.add(
         BookingDetails(
           id: vaccinationData[i]['id'],
-          // appointmentCount: vaccinationData[i]['todayAppointments'],
-          appointmentCount: 20,
+          appointmentCount: vaccinationData[i]['todayAppointments'],
           maxLimit: vaccinationData[i]['maxDailyLimit'],
           dose: vaccinationData[i]['vaccine'],
           batchNumber: vaccinationData[i]['batchNumber'],
           vCenter: vaccinationData[i]['name'],
-          isActive: true,
-          //isActive: vaccinationData[i]['vaccinatedAt'],
+          isActive: vaccinationData[i]['vaccinatedAt'],
         ),
       );
     }
@@ -51,8 +51,9 @@ class _BookAppointmentState extends State<BookAppointment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
+    print(_dateTime);
     String url =
-        "https://vms-sl.azurewebsites.net/v-center/city/$district?date=$date";
+        "http://vms-sl.azurewebsites.net/v-center/filter/$district?date=$date";
 
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -80,8 +81,10 @@ class _BookAppointmentState extends State<BookAppointment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
+    int vCenter = (prefs.getInt('vCenterId') ?? '');
+
     Map data = {
-      "vCenterId": 4,
+      "vCenterId": vCenter,
       "date": DateFormat("dd-MM-yyyy").format(_dateTime),
     };
     var body = json.encode(data);
@@ -96,14 +99,19 @@ class _BookAppointmentState extends State<BookAppointment> {
           },
           body: body);
       print(res.statusCode);
-      if (res.statusCode == 400) {
+      if (res.statusCode == 403) {
+        print(vCenter);
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.error,
+            text: "You already have an appointment");
         print(json.decode(res.body));
       }
       if (res.statusCode == 200) {
         jsonResponse = json.decode(res.body);
+        CoolAlert.show(context: context, type: CoolAlertType.success);
+        Navigator.pushNamed(context, Appointment.routeName);
         print("Response Status: ${res.statusCode}");
-
-        if (jsonResponse != null) {}
       }
     } catch (error) {
       print(error);
