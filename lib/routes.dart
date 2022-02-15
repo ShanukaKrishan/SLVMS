@@ -6,6 +6,10 @@ import 'package:fyp/screens/profile/Profile.dart';
 import 'package:fyp/screens/services/Services.dart';
 import 'screens/home/Home.dart';
 import 'screens/appointment/YourAppointments.dart';
+import 'screens/information/information sub screens/ContactLists.dart';
+import 'screens/information/information sub screens/CovidReport.dart';
+import 'screens/information/information sub screens/PreVaccineCheckList.dart';
+import 'screens/information/information sub screens/VaccineInformation.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LoginScreen.routeName: (context) => LoginScreen(),
@@ -15,4 +19,8 @@ final Map<String, WidgetBuilder> routes = {
   Profile.routeName: (context) => Profile(),
   Information.routeName: (context) => Information(),
   BookAppointment.routeName: (context) => BookAppointment(),
+  ContactList.routeName: (context) => ContactList(),
+  CovidReport.routeName: (context) => CovidReport(),
+  PreVaccineCheckList.routeName: (context) => PreVaccineCheckList(),
+  VaccineInformation.routeName: (context) => VaccineInformation(),
 };
