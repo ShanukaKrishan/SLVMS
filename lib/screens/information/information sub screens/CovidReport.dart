@@ -27,16 +27,20 @@ class _CovidReportState extends State<CovidReport> {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     });
-
-    if (response.body != null) {
-      data = json.decode(response.body);
-      var hospitalData = data['data'];
-      print(hospitalData);
-      totalConfirmed = hospitalData['local_total_cases'];
-      print(totalConfirmed);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      if (response.body != null) {
+        data = json.decode(response.body)['data'];
+        totalConfirmed = data['local_total_cases'].toString();
+        dailyCases = data['local_new_cases'].toString();
+        activeCases = data['local_active_cases'].toString();
+        recovered = data['local_recovered'].toString();
+        deaths = data['local_deaths'].toString();
+      }
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   @override
@@ -72,7 +76,7 @@ class _CovidReportState extends State<CovidReport> {
                             height: 25,
                           ),
                           Text(
-                            totalConfirmed.toString(),
+                            totalConfirmed,
                             style: TextStyle(
                               fontSize: 42,
                               color: Color.fromRGBO(253, 183, 47, 1),
@@ -104,7 +108,7 @@ class _CovidReportState extends State<CovidReport> {
                             height: 25,
                           ),
                           Text(
-                            "18,158",
+                            activeCases,
                             style: TextStyle(
                               fontSize: 42,
                               color: Color.fromRGBO(228, 62, 57, 1),
@@ -136,7 +140,7 @@ class _CovidReportState extends State<CovidReport> {
                             height: 25,
                           ),
                           Text(
-                            "18,158",
+                            dailyCases,
                             style: TextStyle(
                               fontSize: 42,
                               color: Color.fromRGBO(112, 82, 251, 1),
@@ -147,7 +151,7 @@ class _CovidReportState extends State<CovidReport> {
                             height: 15,
                           ),
                           Text(
-                            "Active Cases",
+                            "Daily Cases",
                             style: TextStyle(
                               fontSize: 20,
                             ),
@@ -168,7 +172,7 @@ class _CovidReportState extends State<CovidReport> {
                             height: 25,
                           ),
                           Text(
-                            "18,158",
+                            recovered,
                             style: TextStyle(
                               fontSize: 42,
                               color: Color.fromRGBO(80, 205, 138, 1),
@@ -200,7 +204,7 @@ class _CovidReportState extends State<CovidReport> {
                             height: 25,
                           ),
                           Text(
-                            "18,158",
+                            deaths,
                             style: TextStyle(
                               fontSize: 42,
                               color: Color.fromRGBO(246, 74, 143, 1),
