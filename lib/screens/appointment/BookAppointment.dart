@@ -23,6 +23,7 @@ class _BookAppointmentState extends State<BookAppointment> {
   void listOfWidgets(var vaccinationData) {
     appointmentCard.clear();
 
+    print("data received");
     print(vaccinationData);
     for (int i = 0; i < vaccinationData.length; i++) {
       appointmentCard.add(
@@ -51,10 +52,10 @@ class _BookAppointmentState extends State<BookAppointment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    print(_dateTime);
     String url =
         "http://vms-sl.azurewebsites.net/v-center/filter/$district?date=$date";
 
+    print(url);
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -85,7 +86,7 @@ class _BookAppointmentState extends State<BookAppointment> {
 
     Map data = {
       "vCenterId": vCenter,
-      "date": DateFormat("dd-MM-yyyy").format(_dateTime),
+      "date": DateFormat("MM/dd/yyyy").format(_dateTime),
     };
     var body = json.encode(data);
     print(url);
@@ -213,7 +214,7 @@ class _BookAppointmentState extends State<BookAppointment> {
                         appointmentCard
                             .add(Center(child: CircularProgressIndicator()));
                         apiCall(selectedDistrict,
-                            DateFormat("dd-MM-yyyy").format(_dateTime));
+                            DateFormat("MM/dd/yyyy").format(_dateTime));
                       });
                     },
                   ),
@@ -260,7 +261,7 @@ class _BookAppointmentState extends State<BookAppointment> {
                       appointmentCard
                           .add(Center(child: CircularProgressIndicator()));
                       apiCall(selectedDistrict,
-                          DateFormat("dd-MM-yyyy").format(_dateTime));
+                          DateFormat("MM/dd/yyyy").format(_dateTime));
                     });
                   });
                 },
@@ -295,7 +296,7 @@ class _BookAppointmentState extends State<BookAppointment> {
               FutureBuilder(
                   future: apiCall(
                     selectedDistrict,
-                    DateFormat("dd-MM-yyyy").format(_dateTime),
+                    DateFormat("MM/dd/yyyy").format(_dateTime),
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.data != null) {
