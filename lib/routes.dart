@@ -10,6 +10,7 @@ import 'screens/information/information sub screens/ContactLists.dart';
 import 'screens/information/information sub screens/CovidReport.dart';
 import 'screens/information/information sub screens/PreVaccineCheckList.dart';
 import 'screens/information/information sub screens/VaccineInformation.dart';
+import 'screens/services/services sub screens/ReportSymptoms.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LoginScreen.routeName: (context) => LoginScreen(),
@@ -23,4 +24,5 @@ final Map<String, WidgetBuilder> routes = {
   CovidReport.routeName: (context) => CovidReport(),
   PreVaccineCheckList.routeName: (context) => PreVaccineCheckList(),
   VaccineInformation.routeName: (context) => VaccineInformation(),
+  ReportSymptoms.routeName: (context) => ReportSymptoms(),
 };
