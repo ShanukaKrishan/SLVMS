@@ -26,7 +26,7 @@ class VaccineDetailsCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
               width: 3,
-              color: Color.fromRGBO(132, 135, 142, 1),
+              color: Colors.black,
             ),
           ),
           child: Padding(
@@ -38,10 +38,8 @@ class VaccineDetailsCard extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Image(
-                      image: AssetImage("assets/images/bottle.png"),
-                      color: Color.fromRGBO(132, 135, 142, 1),
-                      height: 30,
-                      width: 40,
+                      image: AssetImage("assets/images/vaccineFilled.png"),
+                      color: Colors.black,
                     ),
                     SizedBox(
                       width: 10,
@@ -56,11 +54,12 @@ class VaccineDetailsCard extends StatelessWidget {
                 ),
                 Row(
                   children: <Widget>[
-                    Image(
-                      image: AssetImage("assets/images/injection2.png"),
-                      color: Color.fromRGBO(132, 135, 142, 1),
-                      height: 30,
-                      width: 40,
+                    SizedBox(
+                      width: 27,
+                      child: Image(
+                        image: AssetImage("assets/images/injectionFilled.png"),
+                        color: Colors.black,
+                      ),
                     ),
                     SizedBox(
                       width: 10,
@@ -68,6 +67,7 @@ class VaccineDetailsCard extends StatelessWidget {
                     Text(
                       batchNumber,
                       style: TextStyle(
+                        color: Colors.black,
                         fontSize: 18,
                       ),
                     ),
@@ -75,11 +75,14 @@ class VaccineDetailsCard extends StatelessWidget {
                 ),
                 Row(
                   children: <Widget>[
-                    Image(
-                      image: AssetImage("assets/images/calendar2.png"),
-                      color: Color.fromRGBO(132, 135, 142, 1),
-                      height: 30,
+                    SizedBox(
+                      height: 50,
                       width: 40,
+                      child: Image(
+                        image:
+                            AssetImage("assets/images/vaccinationFilled.png"),
+                        color: Colors.black,
+                      ),
                     ),
                     SizedBox(
                       width: 10,
@@ -88,17 +91,19 @@ class VaccineDetailsCard extends StatelessWidget {
                       vaccinatedAt,
                       style: TextStyle(
                         fontSize: 18,
+                        color: Colors.black,
                       ),
                     ),
                   ],
                 ),
                 Row(
                   children: <Widget>[
-                    Image(
-                      image: AssetImage("assets/images/hospital.png"),
-                      color: Color.fromRGBO(132, 135, 142, 1),
-                      height: 30,
-                      width: 40,
+                    SizedBox(
+                      width: 27,
+                      child: Image(
+                        image: AssetImage("assets/images/pharmacyFilled.png"),
+                        color: Colors.black,
+                      ),
                     ),
                     SizedBox(
                       width: 10,
@@ -107,6 +112,7 @@ class VaccineDetailsCard extends StatelessWidget {
                       child: Text(
                         vCenter,
                         style: TextStyle(
+                          color: Colors.black,
                           fontSize: 18,
                         ),
                       ),
@@ -122,7 +128,7 @@ class VaccineDetailsCard extends StatelessWidget {
           width: 50,
           height: 200,
           decoration: BoxDecoration(
-            color: Color.fromRGBO(132, 135, 142, 1),
+            color: Colors.black,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10),
               bottomLeft: Radius.circular(10),

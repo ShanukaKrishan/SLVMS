@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:fyp/components/MainAppBar.dart';
 import 'package:fyp/components/VaccineDetailsCard.dart';
 import 'package:fyp/components/VaccineStatusCard.dart';
@@ -25,9 +26,9 @@ class _HomeState extends State<Home> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    String url = "https://vms-sl.azurewebsites.net/user/profile";
+    // String url = "https://vms-sl.azurewebsites.net/user/profile";
 
-    response = await http.get(url, headers: {
+    response = await http.get(kUserProfile, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',

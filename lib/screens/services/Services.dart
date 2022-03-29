@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/screens/information/Infromation.dart';
+import 'package:fyp/screens/services/services%20sub%20screens/QrScanner.dart';
 import 'package:fyp/screens/services/services%20sub%20screens/ReportSymptoms.dart';
 
 class Services extends StatelessWidget {
@@ -26,7 +27,9 @@ class Services extends StatelessWidget {
           ),
           InformationCard(
             title: "QR Scanner",
-            press: () {},
+            press: () {
+              Navigator.pushNamed(context, CustomQrScanner.routeName);
+            },
           ),
         ],
       ),

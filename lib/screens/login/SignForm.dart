@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:fyp/components/DefaultButton.dart';
 import 'package:fyp/mainHomePage.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:fyp/screens/onboarding/OnBoardingForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,7 +24,7 @@ class _SignFormState extends State<SignForm> {
   bool _isLoading = false;
   login(String userName, String password) async {
     print(userName);
-    var url = Uri.parse("https://vms-sl.azurewebsites.net/auth/login");
+    var url = Uri.parse(kLogin);
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     Map data = {"userName": userName, "password": password};
@@ -34,6 +36,9 @@ class _SignFormState extends State<SignForm> {
           headers: {"Content-Type": "application/json"}, body: body);
       print(res.statusCode);
       if (res.statusCode == 200) {
+        setState(() {
+          _isLoading = false;
+        });
         jsonResponse = json.decode(res.body);
         print("Response Status: ${res.statusCode}");
         if (res.statusCode == 403) {
@@ -41,10 +46,6 @@ class _SignFormState extends State<SignForm> {
         }
 
         if (jsonResponse != null) {
-          setState(() {
-            _isLoading = false;
-          });
-
           sharedPreferences.setString("token", jsonResponse['token']);
           sharedPreferences.setString("name", jsonResponse['userName']);
 
@@ -56,6 +57,16 @@ class _SignFormState extends State<SignForm> {
             _isLoading = false;
           });
         }
+      }
+      if (res.statusCode == 401) {
+        setState(() {
+          _isLoading = false;
+        });
+        print(_passwordController.text);
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.error,
+            text: "Incorrect Email or Password");
       }
       if (res.statusCode == 503) {
         print("Server under maintenance, Please check after a while ");
@@ -108,16 +119,71 @@ class _SignFormState extends State<SignForm> {
           SizedBox(
             height: 50,
           ),
-          DefaultButton(
-            press: () {
-              setState(() {
-                _isLoading = true;
-              });
-
-              login(_emailController.text, _passwordController.text);
-            },
-            text: "Login",
+          Container(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.black,
+                textStyle: TextStyle(fontSize: 20),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0)),
+                minimumSize: Size.fromHeight(55),
+              ),
+              onPressed: () async {
+                setState(() {
+                  _isLoading = true;
+                });
+                login(_emailController.text, _passwordController.text);
+              },
+              child: _isLoading
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 24,
+                        ),
+                        Text("Please Wait.."),
+                      ],
+                    )
+                  : Text("Login"),
+            ),
           ),
+          SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Don't have an account? "),
+                GestureDetector(
+                  onTap: () => Navigator.popAndPushNamed(
+                      context, OnBoardingForm.routeName),
+                  child: Text(
+                    "Register",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 40,
+          ),
+          // DefaultButton(
+          //   press: () {
+          //     login(_emailController.text, _passwordController.text);
+          //   },
+          //   text: "Login",
+          // ),
         ],
       ),
     );

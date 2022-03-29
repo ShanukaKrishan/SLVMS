@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,14 +53,13 @@ class _ReportSymptomsState extends State<ReportSymptoms> {
     "Ratnapura",
     "Kegalle",
   ];
-  bool _symptomsValue = false;
-  bool _covidTestValue = false;
-  bool _resultValue = false;
+  bool _symptomsValue;
+  bool _covidTestValue;
+  bool _resultValue;
   bool _isVisible = false;
   int counter = 0;
   Future sendReport() async {
-    var url =
-        Uri.parse("http://vms-sl.azurewebsites.net/report/report-symptoms");
+    var url = Uri.parse(kReportSymptom);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 

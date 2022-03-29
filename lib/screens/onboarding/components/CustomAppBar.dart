@@ -14,17 +14,21 @@ class CustomAppBar extends StatelessWidget {
         color: Colors.black,
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Image(
             image: AssetImage(
               'assets/images/logo.png',
             ),
-            width: 100,
-            height: 70,
+            width: 60,
+            height: 60,
           ),
+          SizedBox(width: 5),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(height: 7),
               Text(
                 "Health Promotion Bureau",
                 textAlign: TextAlign.center,
@@ -37,8 +41,9 @@ class CustomAppBar extends StatelessWidget {
                 "Vaccine Management System",
                 textAlign: TextAlign.center,
                 style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
                   color: Colors.white,
-                  fontSize: 22,
+                  fontSize: 18,
                 ),
               ),
             ],

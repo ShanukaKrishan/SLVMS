@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:fyp/screens/login/Login.dart';
 import 'components/CardDetails.dart';
 import 'dart:convert';
@@ -14,11 +15,13 @@ import 'components/CustomAppBar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OnBoardingForm extends StatefulWidget {
+  static String routeName = '/onBoarding';
   @override
   _OnBoardingFormState createState() => _OnBoardingFormState();
 }
 
 class _OnBoardingFormState extends State<OnBoardingForm> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Map userDetails;
   String nic;
   TextEditingController _username = TextEditingController();
@@ -35,7 +38,7 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
     http.Response response;
     nic = _nicController.text;
 
-    String url = "https://sl-citizens.azurewebsites.net/Citizen/$nic";
+    String url = "$kGetCitizen$nic";
 
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -54,7 +57,7 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
 
   registerUser() async {
     print("reoccuring");
-    var url = Uri.parse("https://vms-sl.azurewebsites.net/auth/register");
+    var url = Uri.parse(kRegisterUser);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -343,6 +346,9 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                       onPressed: () async {
                         if (_nicController.text.isEmpty) {
                           print("cant be empty");
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text("NIC can't be empty")));
                         }
                         if (_nicController.text.isNotEmpty) {
                           // getUserDetails();
@@ -463,4 +469,5 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
       ),
     );
   }
+
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fyp/screens/appointment/BookAppointment.dart';
 import 'package:fyp/screens/information/Infromation.dart';
 import 'package:fyp/screens/login/Login.dart';
+import 'package:fyp/screens/onboarding/OnBoardingForm.dart';
 import 'package:fyp/screens/profile/Profile.dart';
 import 'package:fyp/screens/services/Services.dart';
+import 'package:fyp/screens/services/services%20sub%20screens/QrScanner.dart';
 import 'screens/home/Home.dart';
 import 'screens/appointment/YourAppointments.dart';
 import 'screens/information/information sub screens/ContactLists.dart';
@@ -25,4 +27,6 @@ final Map<String, WidgetBuilder> routes = {
   PreVaccineCheckList.routeName: (context) => PreVaccineCheckList(),
   VaccineInformation.routeName: (context) => VaccineInformation(),
   ReportSymptoms.routeName: (context) => ReportSymptoms(),
+  OnBoardingForm.routeName: (context) => OnBoardingForm(),
+  CustomQrScanner.routeName: (context) => CustomQrScanner(),
 };

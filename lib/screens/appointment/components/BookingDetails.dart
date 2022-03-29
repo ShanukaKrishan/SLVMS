@@ -26,6 +26,7 @@ class BookingDetails extends StatefulWidget {
 
 class _BookingDetailsState extends State<BookingDetails> {
   bool value = false;
+  bool _isSelected = false;
 
   @override
   void initState() {

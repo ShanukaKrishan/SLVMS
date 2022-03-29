@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:fyp/components/MainAppBar.dart';
 import 'package:fyp/components/DefaultButton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +7,8 @@ import 'dart:convert';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:http/http.dart' as http;
 import 'package:fyp/screens/profile/components/YourAccountDetails.dart';
+
+import '../login/Login.dart';
 
 class Profile extends StatelessWidget {
   static String routeName = '/profileScreen';
@@ -17,8 +20,7 @@ class Profile extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool checkColor = false;
   updatePassword(BuildContext context) async {
-    var url =
-        Uri.parse("https://vms-sl.azurewebsites.net/auth/change-password");
+    var url = Uri.parse(kChangePassword);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -29,6 +31,7 @@ class Profile extends StatelessWidget {
     };
     var body = json.encode(data);
     print(url);
+    print(data);
     var jsonResponse;
     try {
       var res = await http.post(url,
@@ -136,7 +139,7 @@ class Profile extends StatelessWidget {
                       },
                     ),
                     SizedBox(
-                      height: 15,
+                      height: 10,
                     ),
                     TextFormField(
                       obscureText: true,
@@ -204,6 +207,15 @@ class Profile extends StatelessWidget {
                 height: 20,
               ),
               DefaultButton(
+                press: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.clear();
+                  Navigator.of(context).pushAndRemoveUntil(
+                      new MaterialPageRoute(
+                          builder: (context) => new LoginScreen()),
+                      (route) => false);
+                },
                 color: Colors.red,
                 text: "Logout",
               ),

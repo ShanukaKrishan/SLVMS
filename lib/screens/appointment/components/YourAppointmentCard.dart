@@ -83,34 +83,36 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 5, bottom: 3),
-                    child: Image(
-                      image: AssetImage("assets/images/bottle.png"),
-                      color: Color.fromRGBO(132, 135, 142, 1),
-                      height: 30,
-                      width: 40,
+              Container(
+                width: double.infinity,
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: 5, bottom: 3),
+                      child: Image(
+                        image: AssetImage("assets/images/bottle.png"),
+                        color: Color.fromRGBO(132, 135, 142, 1),
+                        height: 30,
+                        width: 40,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    text(),
-                    style: TextStyle(
-                      fontSize: 18,
+                    SizedBox(
+                      width: 10,
                     ),
-                  ),
-                  SizedBox(
-                    width: 180,
-                  ),
-                  Checkbox(
-                      activeColor: Colors.black,
-                      value: value,
-                      onChanged: (value) {}),
-                ],
+                    Expanded(
+                      child: Text(
+                        widget.vaccineType,
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    Checkbox(
+                        activeColor: Colors.black,
+                        value: value,
+                        onChanged: (value) {}),
+                  ],
+                ),
               ),
               Row(
                 children: <Widget>[

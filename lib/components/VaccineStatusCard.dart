@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:qr/qr.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -40,7 +41,7 @@ class VaccineStatusCard extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Container(
-          width: 600,
+          width: double.infinity,
           height: 200,
           decoration: BoxDecoration(
             color: bottomColor,
@@ -50,7 +51,7 @@ class VaccineStatusCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.only(top: 80, left: 20, right: 20),
+                padding: EdgeInsets.only(top: 80, left: 10, right: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -60,7 +61,7 @@ class VaccineStatusCard extends StatelessWidget {
                     Text(
                       "Vaccination Status",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -70,7 +71,7 @@ class VaccineStatusCard extends StatelessWidget {
                     Text(
                       vaccinationData,
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -81,7 +82,7 @@ class VaccineStatusCard extends StatelessWidget {
           ),
         ),
         Container(
-          padding: EdgeInsets.all(23),
+          padding: EdgeInsets.only(left: 10, top: 23, right: 23, bottom: 23),
           width: 600,
           height: 80,
           decoration: BoxDecoration(
@@ -106,12 +107,11 @@ class VaccineStatusCard extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: 24,
-          left: 230,
+          top: 25,
+          left: 200,
           child: QrImage(
-            data: "https://slvms.z13.web.core.windows.net/vaccination-card/" +
-                userName,
-            size: 140,
+            data: kVaccinationCard + userName,
+            size: 120,
             backgroundColor: Colors.white,
           ),
         ),

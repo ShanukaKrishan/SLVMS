@@ -1,5 +1,6 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:fyp/components/MainAppBar.dart';
 import 'components/YourAppointmentCard.dart';
 import 'package:fyp/components/DefaultButton.dart';
@@ -26,13 +27,14 @@ class _AppointmentState extends State<Appointment> {
 
     String token = (prefs.getString('token') ?? '');
     int id = (prefs.getInt('appointmentId') ?? '');
-    String url = "https://vms-sl.azurewebsites.net/appointment/cancel/$id";
+    String url = "$kCancelAppointment$id";
 
     response = await http.put(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     });
+    print(response);
 
     if (response.statusCode == 200) {
       CoolAlert.show(
@@ -48,9 +50,9 @@ class _AppointmentState extends State<Appointment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    String url = "https://vms-sl.azurewebsites.net/user/appointments";
+    //String url = "https://vms-sl.azurewebsites.net/user/appointments";
 
-    response = await http.get(url, headers: {
+    response = await http.get(kGetUserAppointment, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
@@ -60,6 +62,7 @@ class _AppointmentState extends State<Appointment> {
       List appointmentData = [];
 
       appointmentData = json.decode(response.body);
+      print(appointmentData);
       appointmentCards.clear();
 
       print(appointmentData);
@@ -109,45 +112,81 @@ class _AppointmentState extends State<Appointment> {
                         height: 10,
                       ),
                       Column(
-                        children: appointmentCards,
+                        children: appointmentCards.isEmpty
+                            ? [
+                                SizedBox(height: 40),
+                                Text(
+                                  "You don't have any appointments \n Book an appointment and get vaccinated :)",
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 140),
+                              ]
+                            : appointmentCards,
                       ),
                       SizedBox(
                         height: 20,
                       ),
-                      DefaultButton(
-                        color: Colors.green,
-                        text: "Add to calendar",
-                        press: () {},
-                      ),
+                      // DefaultButton(
+                      //   color: Colors.green,
+                      //   text: "Add to calendar",
+                      //   press: () {},
+                      // ),
+                      // SizedBox(
+                      //   height: 10,
+                      // ),
+                      // DefaultButton(
+                      //   color: Color.fromRGBO(68, 198, 252, 1),
+                      //   text: "Get directions",
+                      //   press: () {},
+                      // ),
+                      // SizedBox(
+                      //   height: 10,
+                      // ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.red,
+                            minimumSize: Size(double.infinity, 56),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                          ),
+                          onPressed: appointmentCards.isEmpty
+                              ? null
+                              : () {
+                                  CoolAlert.show(
+                                      context: context,
+                                      type: CoolAlertType.confirm,
+                                      onConfirmBtnTap: () {
+                                        setState(() {
+                                          cancelAppointment();
+                                        });
+                                        Navigator.pop(context);
+                                      });
+                                },
+                          child: Text(
+                            "Cancel appointment",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          )),
+                      // DefaultButton(
+                      //   color: Color.fromRGBO(251, 70, 70, 1),
+                      //   text: "Cancel appointment",
+                      //   press: () {
+                      //     CoolAlert.show(
+                      //         context: context,
+                      //         type: CoolAlertType.confirm,
+                      //         onConfirmBtnTap: () {
+                      //           setState(() {
+                      //             cancelAppointment();
+                      //           });
+                      //           Navigator.pop(context);
+                      //         });
+                      //   },
+                      // ),
                       SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
-                      DefaultButton(
-                        color: Color.fromRGBO(68, 198, 252, 1),
-                        text: "Get directions",
-                        press: () {},
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      DefaultButton(
-                        color: Color.fromRGBO(251, 70, 70, 1),
-                        text: "Cancel appointment",
-                        press: () {
-                          CoolAlert.show(
-                              context: context,
-                              type: CoolAlertType.confirm,
-                              onConfirmBtnTap: () {
-                                setState(() {
-                                  cancelAppointment();
-                                });
-                                Navigator.pop(context);
-                              });
-                        },
-                      ),
-                      SizedBox(
-                        height: 70,
-                      ),
+
                       DefaultButton(
                         text: "Book An Appointment",
                         press: () {

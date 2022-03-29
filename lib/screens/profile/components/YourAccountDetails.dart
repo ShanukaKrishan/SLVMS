@@ -1,5 +1,6 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import "package:fyp/components/DefaultButton.dart";
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -31,7 +32,7 @@ class _YourAccountDetailsState extends State<YourAccountDetails> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    String url = "https://vms-sl.azurewebsites.net/user/profile";
+    String url = kUserProfile;
 
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -50,13 +51,14 @@ class _YourAccountDetailsState extends State<YourAccountDetails> {
       lastName = userData['lastName'];
       gender = userData['gender'];
       dob = userData['dob'];
+      prefs.setString('UserID', userData['id']);
     }
 
     return true;
   }
 
   updateAccountDetails() async {
-    var url = Uri.parse("https://vms-sl.azurewebsites.net/user/$id");
+    var url = Uri.parse("$kUpdateUser$id");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 

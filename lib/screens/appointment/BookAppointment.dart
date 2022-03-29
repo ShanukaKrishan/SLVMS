@@ -1,5 +1,6 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/apiConstants.dart';
 import 'package:fyp/components/DefaultButton.dart';
 import 'package:fyp/screens/appointment/YourAppointments.dart';
 import 'package:intl/intl.dart';
@@ -52,8 +53,7 @@ class _BookAppointmentState extends State<BookAppointment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    String url =
-        "http://vms-sl.azurewebsites.net/v-center/filter/$district?date=$date";
+    String url = "${kFilterCenter + district}?date=$date";
 
     print(url);
     response = await http.get(url, headers: {
@@ -77,7 +77,7 @@ class _BookAppointmentState extends State<BookAppointment> {
   }
 
   sendAppointment() async {
-    var url = Uri.parse("https://vms-sl.azurewebsites.net/appointment");
+    var url = Uri.parse(kBookAppointment);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -100,7 +100,8 @@ class _BookAppointmentState extends State<BookAppointment> {
           },
           body: body);
       print(res.statusCode);
-      if (res.statusCode == 403) {
+      print(res.body);
+      if (res.statusCode == 409) {
         print(vCenter);
         CoolAlert.show(
             context: context,
@@ -111,8 +112,11 @@ class _BookAppointmentState extends State<BookAppointment> {
       if (res.statusCode == 200) {
         jsonResponse = json.decode(res.body);
         CoolAlert.show(context: context, type: CoolAlertType.success);
-        Navigator.pushNamed(context, Appointment.routeName);
+
         print("Response Status: ${res.statusCode}");
+      }
+      if (res.statusCode == 409) {
+        jsonResponse = json.decode(res.body);
       }
     } catch (error) {
       print(error);
