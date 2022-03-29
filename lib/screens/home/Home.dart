@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
     String token = (prefs.getString('token') ?? '');
     // String url = "https://vms-sl.azurewebsites.net/user/profile";
 
-    response = await http.get(kUserProfile, headers: {
+    response = await http.get(kApiUrl + 'user/profile', headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',

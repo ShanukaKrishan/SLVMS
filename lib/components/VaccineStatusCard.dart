@@ -110,7 +110,7 @@ class VaccineStatusCard extends StatelessWidget {
           top: 25,
           left: 200,
           child: QrImage(
-            data: kVaccinationCard + userName,
+            data: kApiUrl + 'vaccination-card/' + userName,
             size: 120,
             backgroundColor: Colors.white,
           ),

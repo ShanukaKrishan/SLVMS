@@ -20,7 +20,7 @@ class Profile extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool checkColor = false;
   updatePassword(BuildContext context) async {
-    var url = Uri.parse(kChangePassword);
+    var url = Uri.parse(kApiUrl + '/auth/change-password');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 

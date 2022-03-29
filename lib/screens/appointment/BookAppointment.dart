@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp/apiConstants.dart';
 import 'package:fyp/components/DefaultButton.dart';
 import 'package:fyp/screens/appointment/YourAppointments.dart';
+import 'package:fyp/screens/profile/components/YourAccountDetails.dart';
 import 'package:intl/intl.dart';
 import 'components/BookingDetails.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,7 @@ class BookAppointment extends StatefulWidget {
 
 class _BookAppointmentState extends State<BookAppointment> {
   List<Widget> appointmentCard = [];
+  bool _isLoading = false;
 
   void listOfWidgets(var vaccinationData) {
     appointmentCard.clear();
@@ -40,10 +42,41 @@ class _BookAppointmentState extends State<BookAppointment> {
       );
     }
     appointmentCard.add(
-      DefaultButton(
-        text: "Confirm Booking",
-        press: sendAppointment,
-      ),
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.black,
+            minimumSize: Size(double.infinity, 56),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          ),
+          onPressed: () {
+            setState(() {
+              _isLoading = true;
+            });
+            sendAppointment();
+          },
+          child: _isLoading
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(color: Colors.white),
+                    SizedBox(width: 7),
+                    Text(
+                      "Please wait ",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                )
+              : Text(
+                  "Book appointment",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                )),
     );
     print(appointmentCard);
   }
@@ -53,7 +86,7 @@ class _BookAppointmentState extends State<BookAppointment> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    String url = "${kFilterCenter + district}?date=$date";
+    String url = "${kApiUrl + 'v-center/filter/' + district}?date=$date";
 
     print(url);
     response = await http.get(url, headers: {
@@ -77,7 +110,7 @@ class _BookAppointmentState extends State<BookAppointment> {
   }
 
   sendAppointment() async {
-    var url = Uri.parse(kBookAppointment);
+    var url = Uri.parse(kApiUrl + 'appointment');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -102,6 +135,9 @@ class _BookAppointmentState extends State<BookAppointment> {
       print(res.statusCode);
       print(res.body);
       if (res.statusCode == 409) {
+        setState(() {
+          _isLoading = false;
+        });
         print(vCenter);
         CoolAlert.show(
             context: context,
@@ -110,9 +146,12 @@ class _BookAppointmentState extends State<BookAppointment> {
         print(json.decode(res.body));
       }
       if (res.statusCode == 200) {
+        setState(() {
+          _isLoading = false;
+        });
         jsonResponse = json.decode(res.body);
-        CoolAlert.show(context: context, type: CoolAlertType.success);
-
+        await CoolAlert.show(context: context, type: CoolAlertType.success);
+        Navigator.popAndPushNamed(context, Appointment.routeName);
         print("Response Status: ${res.statusCode}");
       }
       if (res.statusCode == 409) {

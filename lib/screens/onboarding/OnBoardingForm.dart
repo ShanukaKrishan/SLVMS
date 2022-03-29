@@ -38,7 +38,7 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
     http.Response response;
     nic = _nicController.text;
 
-    String url = "$kGetCitizen$nic";
+    String url = "$kApiUrl/Citizen/$nic";
 
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
 
   registerUser() async {
     print("reoccuring");
-    var url = Uri.parse(kRegisterUser);
+    var url = Uri.parse(kApiUrl + 'auth/register');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -469,5 +469,4 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
       ),
     );
   }
-
 }

@@ -32,7 +32,7 @@ class _YourAccountDetailsState extends State<YourAccountDetails> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    String url = kUserProfile;
+    String url = kApiUrl + 'user/profile';
 
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ class _YourAccountDetailsState extends State<YourAccountDetails> {
   }
 
   updateAccountDetails() async {
-    var url = Uri.parse("$kUpdateUser$id");
+    var url = Uri.parse("$kApiUrl/user/$id");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 

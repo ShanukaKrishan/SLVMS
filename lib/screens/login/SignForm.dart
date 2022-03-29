@@ -24,7 +24,7 @@ class _SignFormState extends State<SignForm> {
   bool _isLoading = false;
   login(String userName, String password) async {
     print(userName);
-    var url = Uri.parse(kLogin);
+    var url = Uri.parse(kApiUrl + "auth/login");
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     Map data = {"userName": userName, "password": password};
@@ -129,6 +129,8 @@ class _SignFormState extends State<SignForm> {
                 minimumSize: Size.fromHeight(55),
               ),
               onPressed: () async {
+                FocusScope.of(context).requestFocus(new FocusNode());
+
                 setState(() {
                   _isLoading = true;
                 });

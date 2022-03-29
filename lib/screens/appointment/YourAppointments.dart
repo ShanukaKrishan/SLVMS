@@ -27,7 +27,7 @@ class _AppointmentState extends State<Appointment> {
 
     String token = (prefs.getString('token') ?? '');
     int id = (prefs.getInt('appointmentId') ?? '');
-    String url = "$kCancelAppointment$id";
+    String url = "$kApiUrl/appointment/cancel/$id";
 
     response = await http.put(url, headers: {
       'Content-Type': 'application/json',
@@ -36,13 +36,13 @@ class _AppointmentState extends State<Appointment> {
     });
     print(response);
 
-    if (response.statusCode == 200) {
-      CoolAlert.show(
-          context: context,
-          type: CoolAlertType.success,
-          text: "Appointment Successfully Cancelled");
-      print(json.decode(response.body));
-    }
+    // if (response.statusCode == 200) {
+    //   CoolAlert.show(
+    //       context: context,
+    //       type: CoolAlertType.success,
+    //       text: "Appointment Successfully Cancelled");
+    //   print(json.decode(response.body));
+    // }
   }
 
   Future getAppointments() async {
@@ -52,7 +52,7 @@ class _AppointmentState extends State<Appointment> {
     String token = (prefs.getString('token') ?? '');
     //String url = "https://vms-sl.azurewebsites.net/user/appointments";
 
-    response = await http.get(kGetUserAppointment, headers: {
+    response = await http.get(kApiUrl + 'user/appointments', headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',

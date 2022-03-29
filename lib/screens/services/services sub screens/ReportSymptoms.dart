@@ -59,7 +59,7 @@ class _ReportSymptomsState extends State<ReportSymptoms> {
   bool _isVisible = false;
   int counter = 0;
   Future sendReport() async {
-    var url = Uri.parse(kReportSymptom);
+    var url = Uri.parse(kApiUrl + '/report-symptoms');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
