@@ -32,6 +32,7 @@ class _BookAppointmentState extends State<BookAppointment> {
       appointmentCard.add(
         BookingDetails(
           id: vaccinationData[i]['id'],
+          date: _dateTime,
           appointmentCount: vaccinationData[i]['todayAppointments'],
           maxLimit: vaccinationData[i]['maxDailyLimit'],
           dose: vaccinationData[i]['vaccine'],
@@ -41,43 +42,6 @@ class _BookAppointmentState extends State<BookAppointment> {
         ),
       );
     }
-    appointmentCard.add(
-      ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: Colors.black,
-            minimumSize: Size(double.infinity, 56),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          ),
-          onPressed: () {
-            setState(() {
-              _isLoading = true;
-            });
-            sendAppointment();
-          },
-          child: _isLoading
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(color: Colors.white),
-                    SizedBox(width: 7),
-                    Text(
-                      "Please wait ",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                )
-              : Text(
-                  "Book appointment",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                )),
-    );
     print(appointmentCard);
   }
 
@@ -107,59 +71,6 @@ class _BookAppointmentState extends State<BookAppointment> {
     }
 
     return response.body;
-  }
-
-  sendAppointment() async {
-    var url = Uri.parse(kApiUrl + 'appointment');
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    String token = (prefs.getString('token') ?? '');
-    int vCenter = (prefs.getInt('vCenterId') ?? '');
-
-    Map data = {
-      "vCenterId": vCenter,
-      "date": DateFormat("MM/dd/yyyy").format(_dateTime),
-    };
-    var body = json.encode(data);
-    print(url);
-    var jsonResponse;
-    try {
-      var res = await http.post(url,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-          body: body);
-      print(res.statusCode);
-      print(res.body);
-      if (res.statusCode == 409) {
-        setState(() {
-          _isLoading = false;
-        });
-        print(vCenter);
-        CoolAlert.show(
-            context: context,
-            type: CoolAlertType.error,
-            text: "You already have an appointment");
-        print(json.decode(res.body));
-      }
-      if (res.statusCode == 200) {
-        setState(() {
-          _isLoading = false;
-        });
-        jsonResponse = json.decode(res.body);
-        await CoolAlert.show(context: context, type: CoolAlertType.success);
-        Navigator.popAndPushNamed(context, Appointment.routeName);
-        print("Response Status: ${res.statusCode}");
-      }
-      if (res.statusCode == 409) {
-        jsonResponse = json.decode(res.body);
-      }
-    } catch (error) {
-      print(error);
-    }
   }
 
   void initState() {

@@ -30,12 +30,12 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
       return statusColor = Colors.black;
     }
     if (widget.status == 1) {
-      return statusColor = Colors.green;
+      return statusColor = Colors.green.shade800;
     }
     if (widget.status == 2) {
-      return statusColor = Colors.red;
+      return statusColor = Colors.cyan;
     }
-    return Colors.pink;
+    return Colors.red.shade800;
   }
 
   String text() {
@@ -91,7 +91,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                       padding: EdgeInsets.only(left: 5, bottom: 3),
                       child: Image(
                         image: AssetImage("assets/images/bottle.png"),
-                        color: Color.fromRGBO(132, 135, 142, 1),
+                        color: Colors.black,
                         height: 30,
                         width: 40,
                       ),
@@ -104,6 +104,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                         widget.vaccineType,
                         style: TextStyle(
                           fontSize: 18,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -118,7 +119,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                 children: <Widget>[
                   Image(
                     image: AssetImage("assets/images/injection2.png"),
-                    color: Color.fromRGBO(132, 135, 142, 1),
+                    color: Colors.black,
                     height: 30,
                     width: 40,
                   ),
@@ -128,6 +129,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                   Text(
                     widget.batchNo,
                     style: TextStyle(
+                      color: Colors.black,
                       fontSize: 18,
                     ),
                   ),
@@ -137,7 +139,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                 children: <Widget>[
                   Image(
                     image: AssetImage("assets/images/calendar2.png"),
-                    color: Color.fromRGBO(132, 135, 142, 1),
+                    color: Colors.black,
                     height: 30,
                     width: 40,
                   ),
@@ -147,6 +149,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                   Text(
                     widget.date,
                     style: TextStyle(
+                      color: Colors.black,
                       fontSize: 18,
                     ),
                   ),
@@ -156,7 +159,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                 children: <Widget>[
                   Image(
                     image: AssetImage("assets/images/hospital.png"),
-                    color: Color.fromRGBO(132, 135, 142, 1),
+                    color: Colors.black,
                     height: 30,
                     width: 40,
                   ),
@@ -167,6 +170,7 @@ class _YourAppointmentCardState extends State<YourAppointmentCard> {
                     child: Text(
                       widget.location,
                       style: TextStyle(
+                        color: Colors.black,
                         fontSize: 18,
                       ),
                     ),

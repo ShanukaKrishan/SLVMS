@@ -12,6 +12,14 @@ class CustomQrScanner extends StatefulWidget {
 }
 
 class _CustomQrScannerState extends State<CustomQrScanner> {
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode barcode;
   QRViewController controller;
@@ -55,14 +63,22 @@ class _CustomQrScannerState extends State<CustomQrScanner> {
           //   onQRViewCreated: _onQRViewCreated,
           // ),
           (barcode != null)
-              ? ElevatedButton(
-                  onPressed: () async {
-                    if (await canLaunch(barcode.format.toString())) {
-                      await launch(barcode.format.toString());
-                      print(barcode.format.toString());
-                    }
+              ? GestureDetector(
+                  onTap: () {
+                    _launchURL(barcode.code);
                   },
-                  child: Text("launch"))
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white.withOpacity(1),
+                    ),
+                    child: Text(
+                      barcode.code,
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                )
               : Text('Scan a code'),
         ],
       ),

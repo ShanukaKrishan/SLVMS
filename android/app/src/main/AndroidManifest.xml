@@ -7,7 +7,7 @@
     <application
 
 
-        android:label="fyp"
+        android:label="Vaccine Passport"
         android:icon="@mipmap/ic_launcher">
         <activity
 

@@ -7,6 +7,8 @@ import 'package:fyp/screens/profile/Profile.dart';
 import 'package:fyp/screens/services/Services.dart';
 
 class HomePage extends StatefulWidget {
+  static String routeName = '/homePage';
+
   @override
   _HomePageState createState() => _HomePageState();
 }

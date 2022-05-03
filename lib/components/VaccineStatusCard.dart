@@ -110,7 +110,7 @@ class VaccineStatusCard extends StatelessWidget {
           top: 25,
           left: 200,
           child: QrImage(
-            data: kApiUrl + 'vaccination-card/' + userName,
+            data: 'https://slvms.software/' + 'vaccination-card/' + userName,
             size: 120,
             backgroundColor: Colors.white,
           ),

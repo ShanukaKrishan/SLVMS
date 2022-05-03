@@ -34,25 +34,134 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nicController = TextEditingController();
   var res;
-  Future getUserDetails() async {
+  var getRes;
+  bool _isloading = false;
+  Future<void> getUserDetails() async {
     http.Response response;
     nic = _nicController.text;
 
-    String url = "$kApiUrl/Citizen/$nic";
+    String url = "$kCitizenApiUrl/Citizen/$nic";
 
     response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     });
-
-    if (response.body != null) {
-      userDetails = json.decode(response.body);
-    }
     print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(userDetails);
+
+    if (response.body != null && response.statusCode == 200) {
+      userDetails = await json.decode(response.body);
+      _isloading = false;
     }
-    return true;
+    print(response.body);
+    setState(() {
+      getRes = response.statusCode;
+      _isloading = false;
+    });
+  }
+
+  Widget checkStatus() {
+    switch (getRes) {
+      case 200:
+        return _isloading
+            ? CircularProgressIndicator()
+            : Column(
+                children: <Widget>[
+                  WelcomeText(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "Your personal details",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Card(
+                    elevation: 5,
+                    color: Colors.grey.shade50,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        children: <Widget>[
+                          UserCardDetails(
+                            category: "NIC",
+                            detail: userDetails['nic'],
+                          ),
+                          UserCardDetails(
+                            category: "Full Name",
+                            detail: userDetails['firstName'],
+                          ),
+                          UserCardDetails(
+                            category: "Last Name",
+                            detail: userDetails['lastName'],
+                          ),
+                          UserCardDetails(
+                            category: "Date of Birth",
+                            detail: userDetails['dateOfBirth'],
+                          ),
+                          UserCardDetails(
+                            category: "Street",
+                            detail: userDetails['street'],
+                          ),
+                          UserCardDetails(
+                            category: "City",
+                            detail: userDetails['city'],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 23,
+                  ),
+                ],
+              );
+      case 500:
+        return _isloading
+            ? CircularProgressIndicator()
+            : Column(
+                children: [
+                  Text(
+                    "No user found under the given NIC, Please check the NIC entered again ",
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 40),
+                  ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(minimumSize: Size(170, 40)),
+                      onPressed: () {
+                        setState(() {
+                          currentStep--;
+                        });
+                      },
+                      child: Text(" Back")),
+                ],
+              );
+      case 404:
+        return Column(
+          children: [
+            Text(
+              "No user found under the given NIC, Please check the NIC entered again ",
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 40),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(minimumSize: Size(170, 40)),
+                onPressed: () {
+                  setState(() {
+                    currentStep--;
+                  });
+                },
+                child: Text(" Back")),
+          ],
+        );
+      default:
+        return Text("Something went wrong");
+    }
   }
 
   registerUser() async {
@@ -84,10 +193,18 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
           body: body);
       print(res.statusCode);
 
-      if (res.statusCode == 400) {}
+      if (res.statusCode == 404) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Something went wrong'),
+          backgroundColor: Colors.red,
+        ));
+      }
       if (res.statusCode == 200) {
         var jsonResponse = json.decode(res.body);
-        CoolAlert.show(context: context, type: CoolAlertType.success);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Found'),
+          backgroundColor: Colors.green,
+        ));
         print("Response Status: ${res.statusCode}");
       }
     } catch (error) {
@@ -123,71 +240,9 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
           state: currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 1,
           title: Text(""),
-          content: FutureBuilder(
-              future: getUserDetails(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return userDetails == null
-                      ? CircularProgressIndicator()
-                      : Column(
-                          children: <Widget>[
-                            WelcomeText(),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              "Your personal details",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                            Card(
-                              elevation: 5,
-                              color: Colors.grey.shade50,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Column(
-                                  children: <Widget>[
-                                    UserCardDetails(
-                                      category: "NIC",
-                                      detail: userDetails['nic'],
-                                    ),
-                                    UserCardDetails(
-                                      category: "Full Name",
-                                      detail: userDetails['firstName'],
-                                    ),
-                                    UserCardDetails(
-                                      category: "Last Name",
-                                      detail: userDetails['lastName'],
-                                    ),
-                                    UserCardDetails(
-                                      category: "Date of Birth",
-                                      detail: userDetails['dateOfBirth'],
-                                    ),
-                                    UserCardDetails(
-                                      category: "Street",
-                                      detail: userDetails['street'],
-                                    ),
-                                    UserCardDetails(
-                                      category: "City",
-                                      detail: userDetails['city'],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 23,
-                            ),
-                          ],
-                        );
-                }
-                return Center(child: CircularProgressIndicator());
-              }),
+          content: _isloading
+              ? Center(child: CircularProgressIndicator())
+              : checkStatus(),
         ),
         Step(
           state: currentStep > 2 ? StepState.complete : StepState.indexed,
@@ -301,7 +356,7 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
           state: currentStep > 3 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 3,
           title: Text(""),
-          content: EmailStep(),
+          content: EmailStep(email: _email.text),
         ),
       ];
 
@@ -344,6 +399,7 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                             MaterialStateProperty.all<Color>(Colors.black),
                       ),
                       onPressed: () async {
+                        FocusScope.of(context).unfocus();
                         if (_nicController.text.isEmpty) {
                           print("cant be empty");
                           Scaffold.of(context).showSnackBar(SnackBar(
@@ -351,7 +407,10 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                               content: Text("NIC can't be empty")));
                         }
                         if (_nicController.text.isNotEmpty) {
-                          // getUserDetails();
+                          setState(() {
+                            _isloading = true;
+                          });
+                          getUserDetails();
                           print(_nicController.text);
                           print("not empty");
                           setState(() {
@@ -368,32 +427,38 @@ class _OnBoardingFormState extends State<OnBoardingForm> {
                     ),
                   ),
                 if (currentStep == 1)
-                  Container(
-                    height: 50,
-                    width: 300,
-                    child: TextButton(
-                      style: ButtonStyle(
-                        shape: MaterialStateProperty.all<OutlinedBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.black),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          currentStep += 1;
-                        });
-                      },
-                      child: const Text(
-                        'Confirm',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _isloading
+                      ? SizedBox()
+                      : getRes == 200
+                          ? Container(
+                              height: 50,
+                              width: 300,
+                              child: TextButton(
+                                style: ButtonStyle(
+                                  shape:
+                                      MaterialStateProperty.all<OutlinedBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.black),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    currentStep += 1;
+                                  });
+                                },
+                                child: const Text(
+                                  'Confirm',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : SizedBox(),
                 if (currentStep == 2)
                   Container(
                     height: 50,

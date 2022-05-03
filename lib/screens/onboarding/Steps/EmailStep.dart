@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fyp/screens/onboarding/components/WelcomeText.dart';
 
 class EmailStep extends StatelessWidget {
+  final String email;
   const EmailStep({
+    this.email,
     Key key,
   }) : super(key: key);
 
@@ -29,7 +31,7 @@ class EmailStep extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         Text(
-          "shanukakrishan@yahoo.com",
+          email,
           style: TextStyle(
             fontSize: 18,
           ),

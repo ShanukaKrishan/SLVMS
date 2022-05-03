@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp/apiConstants.dart';
@@ -20,8 +21,10 @@ class Appointment extends StatefulWidget {
 class _AppointmentState extends State<Appointment> {
   List<Widget> appointmentCards = [];
   bool value = true;
+  bool _isLoading = false;
 
   Future cancelAppointment() async {
+    CoolAlert.show(context: context, type: CoolAlertType.loading);
     http.Response response;
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -35,14 +38,30 @@ class _AppointmentState extends State<Appointment> {
       'Authorization': 'Bearer $token',
     });
     print(response);
-
-    // if (response.statusCode == 200) {
-    //   CoolAlert.show(
-    //       context: context,
-    //       type: CoolAlertType.success,
-    //       text: "Appointment Successfully Cancelled");
-    //   print(json.decode(response.body));
-    // }
+    Navigator.pop(context);
+    setState(() {});
+    if (response.statusCode == 200) {
+      await Flushbar(
+        title: "Appointment Cancelled",
+        message: "Your appointment has successfully been cancelled ",
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 3),
+        borderRadius: BorderRadius.circular(10),
+        flushbarPosition: FlushbarPosition.TOP,
+      ).show(context);
+    }
+    if (response.statusCode == 400 ||
+        response.statusCode == 401 ||
+        response.statusCode == 404) {
+      await Flushbar(
+        title: "Something went wrong",
+        message: "Something went wrong please try again later",
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 3),
+        borderRadius: BorderRadius.circular(10),
+        flushbarPosition: FlushbarPosition.TOP,
+      ).show(context);
+    }
   }
 
   Future getAppointments() async {
@@ -155,11 +174,9 @@ class _AppointmentState extends State<Appointment> {
                                   CoolAlert.show(
                                       context: context,
                                       type: CoolAlertType.confirm,
-                                      onConfirmBtnTap: () {
-                                        setState(() {
-                                          cancelAppointment();
-                                        });
+                                      onConfirmBtnTap: () async {
                                         Navigator.pop(context);
+                                        await cancelAppointment();
                                       });
                                 },
                           child: Text(

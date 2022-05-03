@@ -59,7 +59,9 @@ class _ReportSymptomsState extends State<ReportSymptoms> {
   bool _isVisible = false;
   int counter = 0;
   Future sendReport() async {
-    var url = Uri.parse(kApiUrl + '/report-symptoms');
+    CoolAlert.show(
+        context: context, type: CoolAlertType.loading, text: "Please wait...");
+    var url = Uri.parse(kApiUrl + 'report/report-symptoms');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -82,6 +84,7 @@ class _ReportSymptomsState extends State<ReportSymptoms> {
           },
           body: body);
       print(res.statusCode);
+      Navigator.pop(context);
       if (res.statusCode == 405) {
         CoolAlert.show(context: context, type: CoolAlertType.error);
       }

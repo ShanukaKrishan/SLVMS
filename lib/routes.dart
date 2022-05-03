@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp/mainHomePage.dart';
 import 'package:fyp/screens/appointment/BookAppointment.dart';
 import 'package:fyp/screens/information/Infromation.dart';
 import 'package:fyp/screens/login/Login.dart';
@@ -29,4 +30,5 @@ final Map<String, WidgetBuilder> routes = {
   ReportSymptoms.routeName: (context) => ReportSymptoms(),
   OnBoardingForm.routeName: (context) => OnBoardingForm(),
   CustomQrScanner.routeName: (context) => CustomQrScanner(),
+  HomePage.routeName: (context) => HomePage(),
 };

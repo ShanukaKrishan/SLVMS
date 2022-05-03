@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp/apiConstants.dart';
 import 'package:fyp/components/DefaultButton.dart';
@@ -8,6 +9,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:fyp/screens/onboarding/OnBoardingForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class SignForm extends StatefulWidget {
   const SignForm({
@@ -22,6 +24,16 @@ class _SignFormState extends State<SignForm> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+
+  _launchURL() async {
+    const url = 'https://slvms.software/auth/forgot-password';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   login(String userName, String password) async {
     print(userName);
     var url = Uri.parse(kApiUrl + "auth/login");
@@ -94,18 +106,20 @@ class _SignFormState extends State<SignForm> {
           SizedBox(
             height: 30,
           ),
-          TextField(
+          TextFormField(
             controller: _emailController,
+            cursorColor: Colors.black,
             decoration: InputDecoration(
-              hintText: "Enter your email",
-              labelText: "Email",
-              suffixIcon: Icon(Icons.mail),
+              hintText: "Enter your username",
+              labelText: "Username",
+              suffixIcon: Icon(Icons.account_circle),
             ),
           ),
           SizedBox(
             height: 30,
           ),
-          TextField(
+          TextFormField(
+            cursorColor: Colors.black,
             controller: _passwordController,
             obscureText: true,
             decoration: InputDecoration(
@@ -116,8 +130,19 @@ class _SignFormState extends State<SignForm> {
               labelText: "Password",
             ),
           ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: _launchURL,
+                child: Text("Forgot password?"),
+              ),
+            ],
+          ),
+
           SizedBox(
-            height: 50,
+            height: 30,
           ),
           Container(
             child: ElevatedButton(

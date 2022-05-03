@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const kApiUrl = "http://sl-vms.azurewebsites.net/";
+const kCitizenApiUrl = 'https://sl-citizens.azurewebsites.net';
 //const kLogin = "http://sl-vms.azurewebsites.net/auth/login";
 //const kUserProfile = 'http://sl-vms.azurewebsites.net/user/profile';
 //const kVaccinationCard = 'https://slvms.software/vaccination-card/';
