@@ -26,7 +26,6 @@ class _HomeState extends State<Home> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String token = (prefs.getString('token') ?? '');
-    // String url = "https://vms-sl.azurewebsites.net/user/profile";
 
     response = await http.get(kApiUrl + 'user/profile', headers: {
       'Content-Type': 'application/json',
