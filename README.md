@@ -1,4 +1,4 @@
-# SLVMS
+# Sri-lanka Vaccination Management System (SLVMS)
 ## Summary 
 The proposed system is a mobile application to manage COVID-19 vaccination in Sri 
 Lanka. The application is built to improve the livelihood of Sri Lankan citizens. The 
